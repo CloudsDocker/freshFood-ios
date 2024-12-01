@@ -63,7 +63,7 @@ const RecipeListScreen: React.FC<Props> = ({ route, navigation }) => {
         const detailedRecipe = await response.json();
         
         // Safely log the recipe details
-        console.log("Retrieved recipe details:", JSON.stringify(detailedRecipe, null, 2));
+        console.debug("Retrieved recipe details:", JSON.stringify(detailedRecipe, null, 2));
         
         setLoading(null);
         
