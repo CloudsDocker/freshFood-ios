@@ -7,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
+  Linking,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -112,6 +113,10 @@ const RecipeDetailScreen: React.FC<Props> = ({ route }) => {
     }
   };
 
+    const handleFatsecretAttribution = () => {
+    Linking.openURL('https://platform.fatsecret.com/attribution');
+  };
+
   return (
     <ScrollView style={styles.container}>
       <Image source={{ uri: recipe.recipe_image }} style={styles.recipeImage} />
@@ -165,6 +170,15 @@ const RecipeDetailScreen: React.FC<Props> = ({ route }) => {
         </View>
 
         {renderTabContent()}
+
+        <TouchableOpacity onPress={handleFatsecretAttribution} style={styles.attributionContainer}>
+          <Image
+            source={{ uri: 'https://platform.fatsecret.com/api/static/images/powered_by_fatsecret.png' }}
+            style={styles.attributionImage}
+            resizeMode="contain"
+          />
+          <Text style={styles.attributionText}>Powered by fatsecret</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -320,6 +334,21 @@ const styles = StyleSheet.create({
     color: '#7f8c8d',
     marginTop: 8,
     fontSize: 14,
+  },
+  attributionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 24,
+  },
+  attributionImage: {
+    width: 120,
+    height: 20,
+    marginRight: 8,
+  },
+  attributionText: {
+    fontSize: 14,
+    color: '#7f8c8d',
   },
 });
 

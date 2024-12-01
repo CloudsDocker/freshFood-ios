@@ -1,25 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, Dimensions, TouchableOpacity, ActivityIndicator } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList, RecipeSummary } from '../App';
 import {API_ENDPOINTS} from "../config/api.config";
 import { RecipePlaceholder } from './RecipePlaceholder';
-
-// Define the Recipe type to match the data structure
-type Recipe = {
-  recipe_id: string;
-  recipe_name: string;
-  matched_ingredients: string[];
-  missing_ingredients: string[];
-  match_percentage: number;
-  preparation_time: string;
-  cooking_time: string;
-  recipe_image: string;
-};
-
-type RootStackParamList = {
-  RecipeList: { recipes: Recipe[] };
-  RecipeDetail: { recipe: any }; // Using 'any' for now as the detailed recipe type is different
-};
 
 type Props = NativeStackScreenProps<RootStackParamList, 'RecipeList'>;
 
@@ -56,14 +40,11 @@ const RecipeListScreen: React.FC<Props> = ({ route, navigation }) => {
         throw new Error('No response received');
       }
 
-      // Safely log response status
       console.log("Response status:", response.status);
 
       if (response.ok) {
         const detailedRecipe = await response.json();
-        
-        // Safely log the recipe details
-        console.debug("Retrieved recipe details:", JSON.stringify(detailedRecipe, null, 2));
+                console.log("Retrieved recipe details:", JSON.stringify(detailedRecipe, null, 2));
         
         setLoading(null);
         
@@ -92,14 +73,14 @@ const RecipeListScreen: React.FC<Props> = ({ route, navigation }) => {
     }
 };
 
-  const renderRecipeImage = (recipe: Recipe) => {
-    if (recipe.recipe_image === 'N/A' || imageErrors[recipe.recipe_name]) {
-      return (
-        <View style={[styles.recipeImage, styles.placeholderContainer]}>
-          <RecipePlaceholder width={CARD_WIDTH} height={IMAGE_HEIGHT} />
-        </View>
-      );
-    }
+    const renderRecipeImage = (recipe: RecipeSummary) => {
+        if (recipe.recipe_image === 'N/A' || imageErrors[recipe.recipe_name]) {
+            return (
+                <View style={[styles.recipeImage, styles.placeholderContainer]}>
+                    <RecipePlaceholder width={CARD_WIDTH} height={IMAGE_HEIGHT} />
+                </View>
+            );
+        }
 
     return (
       <Image
@@ -116,43 +97,43 @@ const RecipeListScreen: React.FC<Props> = ({ route, navigation }) => {
     );
   };
 
-  const renderRecipeItem = ({ item }: { item: Recipe }) => (
-    <TouchableOpacity 
-      style={styles.recipeItem}
-      onPress={() => handleRecipePress(item.recipe_id)}
-      activeOpacity={0.7}
-      disabled={loading !== null} // Disable all cards while loading
-    >
-      {renderRecipeImage(item)}
-      {loading === item.recipe_name && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#3498db" />
-        </View>
-      )}
-      <View style={styles.recipeContent}>
-        <Text style={styles.recipeName}>{item.recipe_name}</Text>
-        <View style={styles.matchScoreContainer}>
-          <Text style={[
-            styles.recipeMatchScore,
-            { color: item.match_percentage >= 90 ? '#2ecc71' : 
-                     item.match_percentage >= 70 ? '#f1c40f' : '#e74c3c' }
-          ]}>
-            Match: {Math.round(item.match_percentage)}%
-          </Text>
-        </View>
-        <View style={styles.timeContainer}>
-          <View style={styles.timeItem}>
-            <Text style={styles.timeLabel}>Prep Time</Text>
-            <Text style={styles.timeValue}>{item.preparation_time} mins</Text>
-          </View>
-          <View style={styles.timeItem}>
-            <Text style={styles.timeLabel}>Cook Time</Text>
-            <Text style={styles.timeValue}>{item.cooking_time} mins</Text>
-          </View>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
+    const renderRecipeItem = ({ item }: { item: RecipeSummary }) => (
+        <TouchableOpacity
+            style={styles.recipeItem}
+            onPress={() => handleRecipePress(item.recipe_id)}
+            activeOpacity={0.7}
+            disabled={loading !== null} // Disable all cards while loading
+        >
+            {renderRecipeImage(item)}
+            {loading === item.recipe_name && (
+                <View style={styles.loadingOverlay}>
+                    <ActivityIndicator size="large" color="#3498db" />
+                </View>
+            )}
+            <View style={styles.recipeContent}>
+                <Text style={styles.recipeName}>{item.recipe_name}</Text>
+                <View style={styles.matchScoreContainer}>
+                    <Text style={[
+                        styles.recipeMatchScore,
+                        { color: item.match_percentage >= 90 ? '#2ecc71' :
+                                item.match_percentage >= 70 ? '#f1c40f' : '#e74c3c' }
+                    ]}>
+                        Match: {Math.round(item.match_percentage)}%
+                    </Text>
+                </View>
+                <View style={styles.timeContainer}>
+                    <View style={styles.timeItem}>
+                        <Text style={styles.timeLabel}>Prep Time</Text>
+                        <Text style={styles.timeValue}>{item.preparation_time} mins</Text>
+                    </View>
+                    <View style={styles.timeItem}>
+                        <Text style={styles.timeLabel}>Cook Time</Text>
+                        <Text style={styles.timeValue}>{item.cooking_time} mins</Text>
+                    </View>
+                </View>
+            </View>
+        </TouchableOpacity>
+    );
 
   return (
     <View style={styles.container}>
