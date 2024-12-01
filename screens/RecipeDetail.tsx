@@ -10,108 +10,66 @@ import {
   Linking,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-
-type NutritionalInfo = {
-  calcium: string;
-  calories: string;
-  carbohydrate: string;
-  cholesterol: string;
-  fat: string;
-  fiber: string;
-  iron: string;
-  monounsaturated_fat: string;
-  polyunsaturated_fat: string;
-  potassium: string;
-  protein: string;
-  saturated_fat: string;
-  serving_size: string;
-  sodium: string;
-  sugar: string;
-  trans_fat: string;
-  vitamin_a: string;
-  vitamin_c: string;
-};
-
-type Ingredient = {
-  food_name: string;
-  ingredient_description: string;
-};
-
-type Direction = {
-  direction_number: string;
-  direction_description: string;
-};
-
-type Recipe = {
-  recipe_name: string;
-  recipe_description: string;
-  preparation_time: string;
-  cooking_time: string;
-  serving_size: string;
-  recipe_image: string;
-  nutritional_info: NutritionalInfo;
-  ingredients: Ingredient[];
-  directions: Direction[];
-};
-
-type RootStackParamList = {
-  RecipeDetail: { recipe: Recipe };
-};
+import { RootStackParamList, RecipeDetail } from '../App';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'RecipeDetail'>;
 
 const { width } = Dimensions.get('window');
 
 const RecipeDetailScreen: React.FC<Props> = ({ route }) => {
-  const { recipe } = route.params;
-  const [activeTab, setActiveTab] = useState<'ingredients' | 'directions' | 'nutrition'>('ingredients');
+    const { recipe } = route.params;
+    const [activeTab, setActiveTab] = useState<'ingredients' | 'directions' | 'nutrition'>('ingredients');
 
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'ingredients':
-        return (
-          <View style={styles.tabContent}>
-            {recipe.ingredients.map((ingredient, index) => (
-              <View key={index} style={styles.ingredientItem}>
-                <Text style={styles.ingredientName}>{ingredient.food_name}</Text>
-                <Text style={styles.ingredientDescription}>
-                  {ingredient.ingredient_description}
-                </Text>
-              </View>
-            ))}
-          </View>
-        );
-      case 'directions':
-        return (
-          <View style={styles.tabContent}>
-            {recipe.directions.map((direction, index) => (
-              <View key={index} style={styles.directionItem}>
-                <View style={styles.directionNumber}>
-                  <Text style={styles.directionNumberText}>{direction.direction_number}</Text>
-                </View>
-                <Text style={styles.directionDescription}>
-                  {direction.direction_description}
-                </Text>
-              </View>
-            ))}
-          </View>
-        );
-      case 'nutrition':
-        return (
-          <View style={styles.tabContent}>
-            <View style={styles.nutritionGrid}>
-              <NutritionItem label="Calories" value={recipe.nutritional_info.calories} unit="kcal" />
-              <NutritionItem label="Protein" value={recipe.nutritional_info.protein} unit="g" />
-              <NutritionItem label="Carbs" value={recipe.nutritional_info.carbohydrate} unit="g" />
-              <NutritionItem label="Fat" value={recipe.nutritional_info.fat} unit="g" />
-              <NutritionItem label="Fiber" value={recipe.nutritional_info.fiber} unit="g" />
-              <NutritionItem label="Sugar" value={recipe.nutritional_info.sugar} unit="g" />
-            </View>
-            <Text style={styles.servingSize}>Per {recipe.nutritional_info.serving_size}</Text>
-          </View>
-        );
-    }
-  };
+    const renderTabContent = () => {
+        switch (activeTab) {
+            case 'ingredients':
+                return (
+                    <View style={styles.tabContent}>
+                        {recipe.ingredients.map((ingredient, index) => (
+                            <View key={index} style={styles.ingredientItem}>
+                                <Text style={styles.ingredientName}>{ingredient.food_name}</Text>
+                                <Text style={styles.ingredientDescription}>
+                                    {ingredient.ingredient_description}
+                                </Text>
+                            </View>
+                        ))}
+                    </View>
+                );
+            case 'directions':
+                return (
+                    <View style={styles.tabContent}>
+                        {recipe.directions.map((direction, index) => (
+                            <View key={index} style={styles.directionItem}>
+                                <View style={styles.directionNumber}>
+                                    <Text style={styles.directionNumberText}>{direction.direction_number}</Text>
+                                </View>
+                                <Text style={styles.directionDescription}>
+                                    {direction.direction_description}
+                                </Text>
+                            </View>
+                        ))}
+                    </View>
+                );
+            case 'nutrition':
+                return (
+                    <View style={styles.tabContent}>
+                        <View style={styles.nutritionGrid}>
+                            <NutritionItem label="Calories" value={recipe.nutritional_info.calories} unit="kcal" />
+                            <NutritionItem label="Protein" value={recipe.nutritional_info.protein} unit="g" />
+                            <NutritionItem label="Carbs" value={recipe.nutritional_info.carbohydrate} unit="g" />
+                            <NutritionItem label="Fat" value={recipe.nutritional_info.fat} unit="g" />
+                            <NutritionItem label="Fiber" value={recipe.nutritional_info.fiber} unit="g" />
+                            <NutritionItem label="Sugar" value={recipe.nutritional_info.sugar} unit="g" />
+                        </View>
+                        <Text style={styles.servingSize}>Per {recipe.nutritional_info.serving_size}</Text>
+                    </View>
+                );
+        }
+    };
+
+    return (
+        <ScrollView style={styles.container}>
+            <Image source={{ uri: recipe.recipe_image }} style={styles.recipeImage} />
 
     const handleFatsecretAttribution = () => {
     Linking.openURL('https://platform.fatsecret.com/attribution');
@@ -142,32 +100,49 @@ const RecipeDetailScreen: React.FC<Props> = ({ route }) => {
           </View>
         </View>
 
-        <View style={styles.tabContainer}>
-          <TouchableOpacity 
-            style={[styles.tab, activeTab === 'ingredients' && styles.activeTab]}
-            onPress={() => setActiveTab('ingredients')}
-          >
-            <Text style={[styles.tabText, activeTab === 'ingredients' && styles.activeTabText]}>
-              Ingredients
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.tab, activeTab === 'directions' && styles.activeTab]}
-            onPress={() => setActiveTab('directions')}
-          >
-            <Text style={[styles.tabText, activeTab === 'directions' && styles.activeTabText]}>
-              Directions
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.tab, activeTab === 'nutrition' && styles.activeTab]}
-            onPress={() => setActiveTab('nutrition')}
-          >
-            <Text style={[styles.tabText, activeTab === 'nutrition' && styles.activeTabText]}>
-              Nutrition
-            </Text>
-          </TouchableOpacity>
-        </View>
+                <View style={styles.timeContainer}>
+                    <View style={styles.timeItem}>
+                        <Text style={styles.timeLabel}>Prep Time</Text>
+                        <Text style={styles.timeValue}>{recipe.preparation_time} mins</Text>
+                    </View>
+                    <View style={styles.timeSeparator} />
+                    <View style={styles.timeItem}>
+                        <Text style={styles.timeLabel}>Cook Time</Text>
+                        <Text style={styles.timeValue}>{recipe.cooking_time} mins</Text>
+                    </View>
+                    <View style={styles.timeSeparator} />
+                    <View style={styles.timeItem}>
+                        <Text style={styles.timeLabel}>Serving</Text>
+                        <Text style={styles.timeValue}>{recipe.serving_size}</Text>
+                    </View>
+                </View>
+
+                <View style={styles.tabContainer}>
+                    <TouchableOpacity
+                        style={[styles.tab, activeTab === 'ingredients' && styles.activeTab]}
+                        onPress={() => setActiveTab('ingredients')}
+                    >
+                        <Text style={[styles.tabText, activeTab === 'ingredients' && styles.activeTabText]}>
+                            Ingredients
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.tab, activeTab === 'directions' && styles.activeTab]}
+                        onPress={() => setActiveTab('directions')}
+                    >
+                        <Text style={[styles.tabText, activeTab === 'directions' && styles.activeTabText]}>
+                            Directions
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.tab, activeTab === 'nutrition' && styles.activeTab]}
+                        onPress={() => setActiveTab('nutrition')}
+                    >
+                        <Text style={[styles.tabText, activeTab === 'nutrition' && styles.activeTabText]}>
+                            Nutrition
+                        </Text>
+                    </TouchableOpacity>
+                </View>
 
         {renderTabContent()}
 
@@ -182,15 +157,16 @@ const RecipeDetailScreen: React.FC<Props> = ({ route }) => {
       </View>
     </ScrollView>
   );
+
 };
 
-const NutritionItem: React.FC<{ label: string; value: string; unit: string }> = ({ 
-  label, value, unit 
+const NutritionItem: React.FC<{ label: string; value: string; unit: string }> = ({
+    label, value, unit
 }) => (
-  <View style={styles.nutritionItem}>
-    <Text style={styles.nutritionValue}>{parseFloat(value).toFixed(1)}{unit}</Text>
-    <Text style={styles.nutritionLabel}>{label}</Text>
-  </View>
+    <View style={styles.nutritionItem}>
+        <Text style={styles.nutritionValue}>{parseFloat(value).toFixed(1)}{unit}</Text>
+        <Text style={styles.nutritionLabel}>{label}</Text>
+    </View>
 );
 
 const styles = StyleSheet.create({

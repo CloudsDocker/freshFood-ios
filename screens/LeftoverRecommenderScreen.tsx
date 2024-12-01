@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, Button, TextInput, TouchableOpacity, Modal, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import {API_ENDPOINTS} from "../config/api.config";
+import { API_ENDPOINTS } from "../config/api.config";
 
 type RootStackParamList = {
   Home: undefined;

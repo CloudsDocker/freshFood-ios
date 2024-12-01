@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import {apiClient} from "../config/api.config";
+import { apiClient } from '../config/api.config';
 
 const CameraScreen: React.FC = ({ navigation }: any) => {
   const [capturedImage, setCapturedImage] = useState<ImageSourcePropType | null>(null);
