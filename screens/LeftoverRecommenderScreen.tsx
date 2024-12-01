@@ -33,6 +33,7 @@ const LeftoverRecommenderScreen: React.FC<Props> = ({ navigation, route }) => {
     const loadIngredients = async () => {
       try {
         const storedIngredients = await AsyncStorage.getItem('@ingredients_list');
+        console.log("storedIngredients is:", storedIngredients)
         if (storedIngredients) {
           setIngredients(JSON.parse(storedIngredients));
         }

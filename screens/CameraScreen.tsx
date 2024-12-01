@@ -22,7 +22,6 @@ const CameraScreen: React.FC = ({ navigation }: any) => {
       require('../assets/carrot.jpg'),
       require('../assets/potato.jpg'),
       require('../assets/spinach.jpg'),
-      require('../assets/tomato2.jpg'),
     ];
     const randomIndex = Math.floor(Math.random() * placeholderImages.length);
     setCapturedImage(placeholderImages[randomIndex]);
@@ -67,6 +66,7 @@ const CameraScreen: React.FC = ({ navigation }: any) => {
 
       // If ingredients are recognized, proceed
       if (data && data.ingredients) {
+        console.log("data is:",data)
         // Navigate back and pass recognized ingredients
         navigation.navigate('LeftoverRecommender', { recognizedIngredients: data.ingredients || [] });
 

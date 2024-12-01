@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, Dimensions, TouchableOpacity, ActivityIndicator } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList, RecipeSummary } from '../App';
-import { API_ENDPOINTS } from "../config/api.config";
+
+import {API_ENDPOINTS} from "../config/api.config";
 import { RecipePlaceholder } from './RecipePlaceholder';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'RecipeList'>;
@@ -23,7 +24,22 @@ const RecipeListScreen: React.FC<Props> = ({ route, navigation }) => {
             return;
         }
 
-        setLoading(recipeId);
+
+      console.log("Response status:", response.status);
+
+      if (response.ok) {
+        const detailedRecipe = await response.json();
+                console.log("Retrieved recipe details:", JSON.stringify(detailedRecipe, null, 2));
+        
+        setLoading(null);
+        
+        if (detailedRecipe) {
+          navigation.navigate('RecipeDetail', { recipe: detailedRecipe });
+        } else {
+          throw new Error('Recipe details are empty');
+        }
+      } else {
+        let errorMessage = `Request failed with status ${response.status}`;
 
         try {
             const url = `${API_ENDPOINTS.RECIPE_DETAIL}/${encodeURIComponent(recipeId)}`;
@@ -81,6 +97,27 @@ const RecipeListScreen: React.FC<Props> = ({ route, navigation }) => {
                 </View>
             );
         }
+        
+        setLoading(null);
+        alert(`Failed to fetch recipe details: ${errorMessage}`);
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      console.error("Error in handleRecipePress:", errorMessage);
+      setLoading(null);
+      alert(`Error: ${errorMessage}`);
+    }
+};
+
+    const renderRecipeImage = (recipe: RecipeSummary) => {
+        if (recipe.recipe_image === 'N/A' || imageErrors[recipe.recipe_name]) {
+            return (
+                <View style={[styles.recipeImage, styles.placeholderContainer]}>
+                    <RecipePlaceholder width={CARD_WIDTH} height={IMAGE_HEIGHT} />
+                </View>
+            );
+        }
+
 
         return (
             <Image
@@ -135,18 +172,58 @@ const RecipeListScreen: React.FC<Props> = ({ route, navigation }) => {
         </TouchableOpacity>
     );
 
-    return (
-        <View style={styles.container}>
-            <Text style={styles.header}>Recommended Recipes</Text>
-            <FlatList
-                data={recipes}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={renderRecipeItem}
-                ListEmptyComponent={<Text style={styles.emptyText}>No recipes found.</Text>}
-                showsVerticalScrollIndicator={false}
-            />
-        </View>
+
+    const renderRecipeItem = ({ item }: { item: RecipeSummary }) => (
+        <TouchableOpacity
+            style={styles.recipeItem}
+            onPress={() => handleRecipePress(item.recipe_id)}
+            activeOpacity={0.7}
+            disabled={loading !== null} // Disable all cards while loading
+        >
+            {renderRecipeImage(item)}
+            {loading === item.recipe_name && (
+                <View style={styles.loadingOverlay}>
+                    <ActivityIndicator size="large" color="#3498db" />
+                </View>
+            )}
+            <View style={styles.recipeContent}>
+                <Text style={styles.recipeName}>{item.recipe_name}</Text>
+                <View style={styles.matchScoreContainer}>
+                    <Text style={[
+                        styles.recipeMatchScore,
+                        { color: item.match_percentage >= 90 ? '#2ecc71' :
+                                item.match_percentage >= 70 ? '#f1c40f' : '#e74c3c' }
+                    ]}>
+                        Match: {Math.round(item.match_percentage)}%
+                    </Text>
+                </View>
+                <View style={styles.timeContainer}>
+                    <View style={styles.timeItem}>
+                        <Text style={styles.timeLabel}>Prep Time</Text>
+                        <Text style={styles.timeValue}>{item.preparation_time} mins</Text>
+                    </View>
+                    <View style={styles.timeItem}>
+                        <Text style={styles.timeLabel}>Cook Time</Text>
+                        <Text style={styles.timeValue}>{item.cooking_time} mins</Text>
+                    </View>
+                </View>
+            </View>
+        </TouchableOpacity>
     );
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.header}>Recommended Recipes</Text>
+      <FlatList
+        data={recipes}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={renderRecipeItem}
+        ListEmptyComponent={<Text style={styles.emptyText}>No recipes found.</Text>}
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
+  );
+
 };
 
 const styles = StyleSheet.create({

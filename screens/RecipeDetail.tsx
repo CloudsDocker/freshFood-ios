@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import {
-    View,
-    Text,
-    ScrollView,
-    StyleSheet,
-    Image,
-    TouchableOpacity,
-    Dimensions,
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Dimensions,
+  Linking,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList, RecipeDetail } from '../App';
@@ -70,9 +71,34 @@ const RecipeDetailScreen: React.FC<Props> = ({ route }) => {
         <ScrollView style={styles.container}>
             <Image source={{ uri: recipe.recipe_image }} style={styles.recipeImage} />
 
-            <View style={styles.contentContainer}>
-                <Text style={styles.recipeName}>{recipe.recipe_name}</Text>
-                <Text style={styles.recipeDescription}>{recipe.recipe_description}</Text>
+    const handleFatsecretAttribution = () => {
+    Linking.openURL('https://platform.fatsecret.com/attribution');
+  };
+
+  return (
+    <ScrollView style={styles.container}>
+      <Image source={{ uri: recipe.recipe_image }} style={styles.recipeImage} />
+      
+      <View style={styles.contentContainer}>
+        <Text style={styles.recipeName}>{recipe.recipe_name}</Text>
+        <Text style={styles.recipeDescription}>{recipe.recipe_description}</Text>
+        
+        <View style={styles.timeContainer}>
+          <View style={styles.timeItem}>
+            <Text style={styles.timeLabel}>Prep Time</Text>
+            <Text style={styles.timeValue}>{recipe.preparation_time} mins</Text>
+          </View>
+          <View style={styles.timeSeparator} />
+          <View style={styles.timeItem}>
+            <Text style={styles.timeLabel}>Cook Time</Text>
+            <Text style={styles.timeValue}>{recipe.cooking_time} mins</Text>
+          </View>
+          <View style={styles.timeSeparator} />
+          <View style={styles.timeItem}>
+            <Text style={styles.timeLabel}>Serving</Text>
+            <Text style={styles.timeValue}>{recipe.serving_size}</Text>
+          </View>
+        </View>
 
                 <View style={styles.timeContainer}>
                     <View style={styles.timeItem}>
@@ -118,10 +144,20 @@ const RecipeDetailScreen: React.FC<Props> = ({ route }) => {
                     </TouchableOpacity>
                 </View>
 
-                {renderTabContent()}
-            </View>
-        </ScrollView>
-    );
+        {renderTabContent()}
+
+        <TouchableOpacity onPress={handleFatsecretAttribution} style={styles.attributionContainer}>
+          <Image
+            source={{ uri: 'https://platform.fatsecret.com/api/static/images/powered_by_fatsecret.png' }}
+            style={styles.attributionImage}
+            resizeMode="contain"
+          />
+          <Text style={styles.attributionText}>Powered by fatsecret</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+  );
+
 };
 
 const NutritionItem: React.FC<{ label: string; value: string; unit: string }> = ({
@@ -134,147 +170,162 @@ const NutritionItem: React.FC<{ label: string; value: string; unit: string }> = 
 );
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
-    recipeImage: {
-        width: width,
-        height: width * 0.75,
-    },
-    contentContainer: {
-        padding: 16,
-    },
-    recipeName: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#2c3e50',
-        marginBottom: 8,
-    },
-    recipeDescription: {
-        fontSize: 16,
-        color: '#7f8c8d',
-        marginBottom: 16,
-        lineHeight: 24,
-    },
-    timeContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        backgroundColor: '#f8f9fa',
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 24,
-    },
-    timeItem: {
-        flex: 1,
-        alignItems: 'center',
-    },
-    timeSeparator: {
-        width: 1,
-        backgroundColor: '#ddd',
-    },
-    timeLabel: {
-        fontSize: 14,
-        color: '#7f8c8d',
-        marginBottom: 4,
-    },
-    timeValue: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#2c3e50',
-    },
-    tabContainer: {
-        flexDirection: 'row',
-        marginBottom: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: '#eee',
-    },
-    tab: {
-        flex: 1,
-        paddingVertical: 12,
-        alignItems: 'center',
-    },
-    activeTab: {
-        borderBottomWidth: 2,
-        borderBottomColor: '#3498db',
-    },
-    tabText: {
-        fontSize: 16,
-        color: '#7f8c8d',
-    },
-    activeTabText: {
-        color: '#3498db',
-        fontWeight: '600',
-    },
-    tabContent: {
-        paddingTop: 16,
-    },
-    ingredientItem: {
-        marginBottom: 16,
-    },
-    ingredientName: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#2c3e50',
-        marginBottom: 4,
-    },
-    ingredientDescription: {
-        fontSize: 14,
-        color: '#7f8c8d',
-    },
-    directionItem: {
-        flexDirection: 'row',
-        marginBottom: 20,
-    },
-    directionNumber: {
-        width: 28,
-        height: 28,
-        borderRadius: 14,
-        backgroundColor: '#3498db',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 12,
-    },
-    directionNumberText: {
-        color: '#fff',
-        fontSize: 14,
-        fontWeight: '600',
-    },
-    directionDescription: {
-        flex: 1,
-        fontSize: 16,
-        color: '#2c3e50',
-        lineHeight: 24,
-    },
-    nutritionGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-    },
-    nutritionItem: {
-        width: '30%',
-        backgroundColor: '#f8f9fa',
-        borderRadius: 8,
-        padding: 12,
-        alignItems: 'center',
-        marginBottom: 16,
-    },
-    nutritionValue: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#2c3e50',
-        marginBottom: 4,
-    },
-    nutritionLabel: {
-        fontSize: 14,
-        color: '#7f8c8d',
-    },
-    servingSize: {
-        textAlign: 'center',
-        color: '#7f8c8d',
-        marginTop: 8,
-        fontSize: 14,
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  recipeImage: {
+    width: width,
+    height: width * 0.75,
+  },
+  contentContainer: {
+    padding: 16,
+  },
+  recipeName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#2c3e50',
+    marginBottom: 8,
+  },
+  recipeDescription: {
+    fontSize: 16,
+    color: '#7f8c8d',
+    marginBottom: 16,
+    lineHeight: 24,
+  },
+  timeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+  },
+  timeItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  timeSeparator: {
+    width: 1,
+    backgroundColor: '#ddd',
+  },
+  timeLabel: {
+    fontSize: 14,
+    color: '#7f8c8d',
+    marginBottom: 4,
+  },
+  timeValue: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#2c3e50',
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    marginBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  activeTab: {
+    borderBottomWidth: 2,
+    borderBottomColor: '#3498db',
+  },
+  tabText: {
+    fontSize: 16,
+    color: '#7f8c8d',
+  },
+  activeTabText: {
+    color: '#3498db',
+    fontWeight: '600',
+  },
+  tabContent: {
+    paddingTop: 16,
+  },
+  ingredientItem: {
+    marginBottom: 16,
+  },
+  ingredientName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#2c3e50',
+    marginBottom: 4,
+  },
+  ingredientDescription: {
+    fontSize: 14,
+    color: '#7f8c8d',
+  },
+  directionItem: {
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+  directionNumber: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#3498db',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  directionNumberText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  directionDescription: {
+    flex: 1,
+    fontSize: 16,
+    color: '#2c3e50',
+    lineHeight: 24,
+  },
+  nutritionGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  nutritionItem: {
+    width: '30%',
+    backgroundColor: '#f8f9fa',
+    borderRadius: 8,
+    padding: 12,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  nutritionValue: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#2c3e50',
+    marginBottom: 4,
+  },
+  nutritionLabel: {
+    fontSize: 14,
+    color: '#7f8c8d',
+  },
+  servingSize: {
+    textAlign: 'center',
+    color: '#7f8c8d',
+    marginTop: 8,
+    fontSize: 14,
+  },
+  attributionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 24,
+  },
+  attributionImage: {
+    width: 120,
+    height: 20,
+    marginRight: 8,
+  },
+  attributionText: {
+    fontSize: 14,
+    color: '#7f8c8d',
+  },
 });
 
 export default RecipeDetailScreen;
